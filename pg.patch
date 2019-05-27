@@ -1,0 +1,29 @@
+diff --git a/Makefile b/Makefile
+index 1c0eddc..c589264 100644
+--- a/Makefile
++++ b/Makefile
+@@ -60,12 +60,12 @@ endif
+ DEFINES     += $(addprefix -I$(SOURCE_PATH),. zstd/lib zstd/lib/common brotli/include xpack/common libcsc)
+ DEFINES     += -DHAVE_CONFIG_H
+ CODE_FLAGS  += -Wno-unknown-pragmas -Wno-sign-compare -Wno-conversion
+-OPT_FLAGS   ?= -fomit-frame-pointer -fstrict-aliasing -ffast-math
++OPT_FLAGS   ?=
+ 
+ 
+ ifeq ($(BUILD_TYPE),debug)
+-	OPT_FLAGS_O2 = $(OPT_FLAGS) -g
+-	OPT_FLAGS_O3 = $(OPT_FLAGS) -g
++	OPT_FLAGS_O2 = $(OPT_FLAGS) -pg
++	OPT_FLAGS_O3 = $(OPT_FLAGS) -pg
+ else
+ 	OPT_FLAGS_O2 = $(OPT_FLAGS) -O2 -DNDEBUG
+ 	OPT_FLAGS_O3 = $(OPT_FLAGS) -O3 -DNDEBUG
+@@ -73,7 +73,7 @@ endif
+ 
+ CFLAGS = $(MOREFLAGS) $(CODE_FLAGS) $(OPT_FLAGS_O3) $(DEFINES)
+ CFLAGS_O2 = $(MOREFLAGS) $(CODE_FLAGS) $(OPT_FLAGS_O2) $(DEFINES)
+-LDFLAGS += $(MOREFLAGS)
++LDFLAGS += $(MOREFLAGS) -pg
+ 
+ 
+ LZO_FILES = lzo/lzo1.o lzo/lzo1a.o lzo/lzo1a_99.o lzo/lzo1b_1.o lzo/lzo1b_2.o lzo/lzo1b_3.o lzo/lzo1b_4.o lzo/lzo1b_5.o
