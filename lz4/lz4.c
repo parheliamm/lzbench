@@ -1726,15 +1726,36 @@ LZ4_decompress_generic(
 
                 /* Fastpath check: Avoids a branch in LZ4_wildCopy32 if true */
                 if ((dict == withPrefix64k) || (match >= lowPrefix)) {
-                    if (offset >= 8) {
-                        assert(match >= lowPrefix);
-                        assert(match <= op);
-                        assert(op + 18 <= oend);
-
+                    assert(match >= lowPrefix);
+                    assert(match <= op);
+                    assert(op + 18 <= oend);
+                    if (likely(offset >= 16)) {
+                        memcpy(op, match, 16);
+                        memcpy(op+16, match+16, 2);
+                        op += length;
+                        continue;
+                     } else if likely(offset >= 8) {
                         memcpy(op, match, 8);
                         memcpy(op+8, match+8, 8);
                         memcpy(op+16, match+16, 2);
                         op += length;
+                        continue;
+            } else {
+                        assert(offset < 8);
+                        //__LZ4_memcpy_using_offset_base(op, match, op+length, offset);
+    cpy = op + length;
+    op[0] = match[0];
+    op[1] = match[1];
+    op[2] = match[2];
+    op[3] = match[3];
+    match += inc32table[offset];
+    memcpy(op+4, match, 4);
+    match -= dec64table[offset];
+    op += 8;
+
+    do { memcpy(op,match,8); op+=8; match+=8; } while (op<cpy);
+
+                        op = cpy;
                         continue;
             }   }   }
 
