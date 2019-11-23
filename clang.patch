@@ -1,5 +1,5 @@
 diff --git a/Makefile b/Makefile
-index 1c0eddc..79c0c82 100644
+index 1c0eddc..9daf2dc 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -58,7 +58,7 @@ endif
@@ -7,7 +7,7 @@ index 1c0eddc..79c0c82 100644
  
  DEFINES     += $(addprefix -I$(SOURCE_PATH),. zstd/lib zstd/lib/common brotli/include xpack/common libcsc)
 -DEFINES     += -DHAVE_CONFIG_H
-+DEFINES     += -DHAVE_CONFIG_H -I/usr/include/c++/5/ -I/usr/aarch64-linux-gnu/include/c++/5/aarch64-linux-gnu/ -I/usr/aarch64-linux-gnu/include
++DEFINES     += -DHAVE_CONFIG_H -I/usr/include/c++/7/ -I/usr/aarch64-linux-gnu/include/c++/7/aarch64-linux-gnu/ -I/usr/aarch64-linux-gnu/include
  CODE_FLAGS  += -Wno-unknown-pragmas -Wno-sign-compare -Wno-conversion
  OPT_FLAGS   ?= -fomit-frame-pointer -fstrict-aliasing -ffast-math
  
@@ -28,34 +28,3 @@ index 1c0eddc..79c0c82 100644
  
  
  LZO_FILES = lzo/lzo1.o lzo/lzo1a.o lzo/lzo1a_99.o lzo/lzo1b_1.o lzo/lzo1b_2.o lzo/lzo1b_3.o lzo/lzo1b_4.o lzo/lzo1b_5.o
-diff --git a/lz4/lz4.c b/lz4/lz4.c
-index a251080..5707c60 100644
---- a/lz4/lz4.c
-+++ b/lz4/lz4.c
-@@ -359,7 +359,7 @@ LZ4_wildCopy32(void* dstPtr, const void* srcPtr, void* dstEnd)
-     BYTE* d = (BYTE*)dstPtr;
-     const BYTE* s = (const BYTE*)srcPtr;
-     BYTE* const e = (BYTE*)dstEnd;
--#if defined(__aarch64__) && !defined(__clang__) && (defined(__GNUC__))
-+#if defined(__aarch64__) && defined(__GNUC__)
-     do { memcpy(d,s,32); d+=32; s+=32; } while (d<e);
- #else
-     do { memcpy(d,s,16); memcpy(d+16,s+16,16); d+=32; s+=32; } while (d<e);
-@@ -372,7 +372,7 @@ LZ4_memcpy_using_offset(BYTE* dstPtr, const BYTE* srcPtr, BYTE* dstEnd, const si
-     BYTE v[8];
-     switch(offset) {
-     case 1:
--#if defined(__aarch64__) && !defined(__clang__) && (defined(__GNUC__))
-+#if defined(__aarch64__) && defined(__GNUC__)
-         v[0] = srcPtr[0];
-         v[1] = srcPtr[0];
-         v[2] = srcPtr[0];
-@@ -1737,7 +1737,7 @@ LZ4_decompress_generic(
- 
-                 /* Fastpath check: Avoids a branch in LZ4_wildCopy32 if true */
-                 if (!(dict == usingExtDict) || (match >= lowPrefix)) {
--#if defined(__aarch64__) && !defined(__clang__) && (defined(__GNUC__))
-+#if defined(__aarch64__) && defined(__GNUC__)
-                     if (offset >= 16) {
-                         memcpy(op, match, 16);
-                         memcpy(op+16, match+16, 2);
